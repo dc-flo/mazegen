@@ -1,0 +1,8 @@
+[package]
+name = "maze"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sdl2 = { version = "0.36.0" }
+rand = "0.9.0-alpha.1"
