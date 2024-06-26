@@ -19,7 +19,7 @@ pub enum GenerationTypes {
     TEMPLATE
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum DrawTypes {
     ALL,
     WALLS,
@@ -49,7 +49,7 @@ impl Maze {
             width,
             height,
             scale: 0.7,
-            draw_mode: DrawTypes::WALLS,
+            draw_mode: WALLS,
             nodes: Rc::new(RefCell::new(nodes)),
             canvas: None,
             events: None
@@ -174,19 +174,22 @@ impl Maze {
         let mut x = x;
         let mut y = y;
         let mut s = nodes[x as usize][y as usize].clone();
-        loop {
-            println!("{:?} - {:?}", x, y);
-            println!("{:?}", s.borrow().paths.len());
-            if s.borrow().target.is_none() {
-                break;
-            } else {
-                if let Some(new) = &s.borrow().target {
-                    x = new.borrow().x;
-                    y = new.borrow().y;
-                }
-                s = nodes[x as usize][y as usize].clone();
-            }
+        while let Some(new) = &RefCell::clone(&s).borrow().target {
+            s = new.clone();
         }
+        // loop {
+        //     println!("{:?} - {:?}", x, y);
+        //     println!("{:?}", s.borrow().paths.len());
+        //     if s.borrow().target.is_none() {
+        //         break;
+        //     } else {
+        //         if let Some(new) = &s.borrow().target {
+        //             x = new.borrow().x;
+        //             y = new.borrow().y;
+        //         }
+        //         s = nodes[x as usize][y as usize].clone();
+        //     }
+        // }
         s
     }
 
@@ -382,7 +385,9 @@ impl Maze {
         Ok(())
     }
 
-    pub fn main_loop(&self) -> Result<(), String> {
+    pub fn main_loop(&mut self) -> Result<(), String> {
+        let drawMethods = [ALL, WALLS, PATHS];
+        let mut drawIndex = 0;
         if let Some(events) = &self.events {
             let mut sdown = false;
             let mut root = (0, 0);
@@ -418,6 +423,22 @@ impl Maze {
                                 self.draw()?;
                             } else if keycode == Keycode::R {
                                 self.shift(None);
+                                self.draw()?;
+                            } else if keycode == Keycode::Up {
+                                if drawIndex == 2 {
+                                    drawIndex = 0;
+                                } else {
+                                    drawIndex += 1;
+                                }
+                                self.draw_mode = drawMethods[drawIndex];
+                                self.draw()?;
+                            } else if keycode == Keycode::Down {
+                                if drawIndex == 0 {
+                                    drawIndex = 2;
+                                } else {
+                                    drawIndex -= 1;
+                                }
+                                self.draw_mode = drawMethods[drawIndex];
                                 self.draw()?;
                             }
                         }
