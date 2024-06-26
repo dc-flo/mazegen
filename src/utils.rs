@@ -41,11 +41,12 @@ impl AdditionalDrawMethods for WindowCanvas {
 }
 
 pub trait AdditionalPointMethods {
-    fn p(x: u32, y: u32) -> Self;
+    fn p(x: u32, y: u32, scale: f32) -> Self;
 }
 
 impl AdditionalPointMethods for Point {
-    fn p(x: u32, y: u32) -> Self {
-        Point::new((x * 100 + 100) as i32, (y * 100 + 100) as i32)
+    fn p(x: u32, y: u32, scale: f32) -> Self {
+        Point::new(((x * 100 + 100) as f32 * scale) as i32,
+                   ((y * 100 + 100) as f32 * scale) as i32)
     }
 }

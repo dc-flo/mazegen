@@ -1,20 +1,24 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Debug, Clone)]
-pub struct Node<'a> {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Node {
     pub x: u32,
     pub y: u32,
-    pub paths: Vec<&'a Rc<RefCell<Node<'a>>>>
+    pub conn: bool,
+    pub paths: Vec<Rc<RefCell<Node>>>,
+    pub target: Option<Rc<RefCell<Node>>>
 }
 
-impl<'a> Node<'a> {
+impl Node {
     pub fn new(x: u32, y: u32) -> Self {
         let paths = Vec::new();
         Node {
             x,
             y,
-            paths
+            conn: false,
+            paths,
+            target: None
         }
     }
 }
